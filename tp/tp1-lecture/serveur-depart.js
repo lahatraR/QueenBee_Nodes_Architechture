@@ -9,7 +9,8 @@
 // Puis, dans un second terminal : node tp/tp1-lecture/sonde.js bloquant (ou flux)
 
 import express from "express";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, createReadStream } from "node:fs";
+import { createInterface } from "node:readline";
 
 const FICHIER = process.argv[2] ?? "data/mesures-SN-CASA-2026-10-31.ndjson";
 
@@ -33,9 +34,56 @@ app.get("/ping", (req, res) => {
 // 3. Analyser chaque ligne avec JSON.parse et additionner les weight_kg.
 // 4. Répondre { mesures, poids_moyen_kg, duree_ms } (duree_ms : mesurée avec performance.now()).
 
+// Lecture bloquante : tout le fichier en mémoire, puis traitement d'un seul bloc.
+app.post("/import/bloquant", (req, res) => {
+  const debut = performance.now();
+
+  const contenu = readFileSync(FICHIER, "utf8");
+  const lignes = contenu.split("\n");
+
+  let mesures = 0;
+  let total = 0;
+  for (const ligne of lignes) {
+    if (ligne.trim() === "") continue;
+    const mesure = JSON.parse(ligne);
+    total += mesure.weight_kg;
+    mesures++;
+  }
+
+  res.json({
+    mesures,
+    poids_moyen_kg: Math.round((total / mesures) * 100) / 100,
+    duree_ms: Math.round(performance.now() - debut),
+  });
+});
+
 // À ÉCRIRE : POST /import/flux
 // Le même calcul, en lisant le fichier avec createReadStream (node:fs) et
 // createInterface (node:readline), puis une boucle for await … of sur les lignes.
+
+// Lecture en flux : une ligne à la fois, la boucle d'événements reprend la main entre deux morceaux.
+app.post("/import/flux", async (req, res) => {
+  const debut = performance.now();
+
+  const lignes = createInterface({ input: createReadStream(FICHIER) });
+
+  let mesures = 0;
+  let total = 0;
+  for await (const ligne of lignes) {
+    if (ligne.trim() === "") continue;
+    const mesure = JSON.parse(ligne);
+    total += mesure.weight_kg;
+    mesures++;
+  }
+
+  res.json({
+    mesures,
+    poids_moyen_kg: Math.round((total / mesures) * 100) / 100,
+    duree_ms: Math.round(performance.now() - debut),
+  });
+});
+
+
 
 app.listen(4000, () => {
   console.log(`Serveur du TP 1 sur http://localhost:4000, fichier : ${FICHIER}`);

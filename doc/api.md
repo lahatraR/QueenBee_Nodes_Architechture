@@ -216,15 +216,28 @@ Corps
   "observations": "Couvain compact, réserves de miel suffisantes."
 }
 ```
+400 : `timestamp` ou `weight_kg` manque, le `hive_id` du corps diffère de celui du chemin,
+ou un champ mesuré n'est pas un nombre dans sa plage physique :
 
-400 : un champ obligatoire manque ou un champ a un type ou une valeur invalide
+| Champ                   | Min | Max |
+|-------------------------|-----|-----|
+| position_lat            | -90 | 90  |
+| position_lon            | -180| 180 |
+| weight_kg               | 0   | 150 |
+| temp_internal_c         | -10 | 60  |
+| temp_external_c         | -20 | 60  |
+| humidity_pct            | 0   | 100 |
+| acoustic_activity_score | 0   | 1   |
+| battery_pct             | 0   | 100 |
+
+<!-- 400 : un champ obligatoire manque ou un champ a un type ou une valeur invalide
 ```json
 {
   "type": "about:blank",
   "title": "Requête invalide",
   "status": 400,
   "detail": "Le champ colony_status doit valoir forte, normale, faible ou morte."
-}
+} -->
 ```
 
 404 : aucune ruche ne porte cet identifiant

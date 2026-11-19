@@ -15,3 +15,14 @@ hivesRouter.get("/", (req, res) => {
 
   res.status(200).json(resultat);
 });
+
+// GET /api/hives/:id
+hivesRouter.get("/:id", (req, res) => {
+  const hive = hives.find((h) => h.id === req.params.id); // find : un seul élément
+
+  if (!hive) {
+    return res.status(404).json({ error: `Aucune ruche ne porte l'identifiant ${req.params.id}.` });
+  }
+
+  res.status(200).json(hive);
+});

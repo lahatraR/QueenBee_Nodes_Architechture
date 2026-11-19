@@ -20,3 +20,30 @@ Voici la version node du projet QueenBee
 
 3. **Pourquoi l'effet est-il presque invisible avec le fichier d'une journée ?**
    Avec 4 800 lignes, la lecture bloquante ne dure que quelques millisecondes. Ce blocage est trop court pour que le pire temps de `/ping` augmente de façon visible.
+
+
+## État du jour 1
+
+API v0, tag `jour1-fin`.
+
+### Fait
+
+- Ruches, mesures et inspections, en mémoire, organisées en couches :
+  routeur → contrôleur → services → repositories (`src/`)
+- Contrat de chaque route : [docs/api.md](docs/api.md)
+- Collection Postman : `QueenBee.postman_collection.json` (sans jeton ni mot de passe)
+- Erreurs au format RFC 9457 (`application/problem+json`), y compris route inconnue et JSON mal formé
+- Contrôle des plages physiques des mesures (UC-CY02)
+- Tests : `npm test` (`test/measures.service.test.js`)
+- Configuration par `.env` (`PORT`, `NODE_ENV`), modèle dans `.env.example`
+
+### Lancer le projet
+
+    cp .env.example .env
+    npm install
+    npm run dev
+    npm test
+
+### Ce qui manque
+
+Rien : tous les points du livrable du jour 1 sont faits.

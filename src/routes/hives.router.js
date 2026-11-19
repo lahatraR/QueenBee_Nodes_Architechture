@@ -1,8 +1,6 @@
 import { Router } from "express";
-import { hives, measures } from "../data/hives.js";
 
 export const hivesRouter = Router();
-import { Router } from "express";
 import { hives, measures, inspections } from "../data/hives.js";
 import { sendProblem } from "../utils/problem.js";
 

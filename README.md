@@ -5,10 +5,11 @@ Voici la version node du projet QueenBee
 
 | Fichier  | Lecture   | Durée de l'import (ms) | Pire temps de /ping (ms) |
 |----------|-----------|------------------------|--------------------------|
-| 1 jour   | bloquante | …                      | …                        |
-| 1 jour   | en flux   | …                      | …                        |
-| 30 jours | bloquante | …                      | …                        |
-| 30 jours | en flux   | …                      | …                        |
+| 1 jour   | bloquante | 15                     | 3                        |
+| 1 jour   | en flux   | 10                     | 2                        |
+| 30 jours | bloquante | 166                    | 146                      |
+| 30 jours | en flux   | 145                    | 2                        |
+
 
 ### Questions
 

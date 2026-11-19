@@ -26,3 +26,32 @@ hivesRouter.get("/:id", (req, res) => {
 
   res.status(200).json(hive);
 });
+
+// POST /api/hives/:id/measures
+hivesRouter.post("/:id/measures", (req, res) => {
+  const hive = hives.find((h) => h.id === req.params.id);
+  if (!hive) {
+    return res.status(404).json({ error: `Aucune ruche ne porte l'identifiant ${req.params.id}.` });
+  }
+
+  const body = req.body ?? {};
+
+  // Seuls timestamp et weight_kg sont obligatoires.
+  if (body.timestamp === undefined) {
+    return res.status(400).json({ error: "Le champ timestamp est obligatoire." });
+  }
+  if (body.weight_kg === undefined) {
+    return res.status(400).json({ error: "Le champ weight_kg est obligatoire." });
+  }
+
+  // Si la trame contient un hive_id, il doit être celui du chemin.
+  if (body.hive_id !== undefined && body.hive_id !== hive.id) {
+    return res.status(400).json({ error: "Le hive_id du corps ne correspond pas à celui du chemin." });
+  }
+
+  // On garde le timestamp de la trame (l'instant de la prise de mesure par le capteur).
+  const mesure = { ...body, hive_id: hive.id, site_id: hive.site_id };
+  measures.push(mesure);
+
+  res.status(201).json(mesure); // 201 Created, pas 200
+});

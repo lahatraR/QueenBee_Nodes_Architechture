@@ -1,3 +1,7 @@
+# Fait par 
+ RAMANAMPAMONJY RIANTSOA LAHATRINIAINA
+ NYAMSI MENYIN VANELE BRICE
+
 # QueenBee_Nodes_Architechture
 Voici la version node du projet QueenBee
 
@@ -48,3 +52,5 @@ API v0, tag `jour1-fin`.
 ### Ce qui manque
 
 Rien : tous les points du livrable du jour 1 sont faits.
+
+

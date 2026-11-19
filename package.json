@@ -4,8 +4,8 @@
   "description": "Voici la version node du projet QueenBee",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch src/server.js"
+    "test": "node --test",
+    "dev": "node --watch --env-file=.env src/server.js"
   },
   "repository": {
     "type": "git",

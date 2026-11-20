@@ -38,7 +38,8 @@ export function createApp({ hivesRepository, measuresRepository, inspectionsRepo
   const app = express();
 
   app.use(requestLogger); // en premier : les JSON mal formés sont journalisés aussi
-  app.use(express.json()); // avant les routes
+  // app.use(express.json()); // avant les routes
+  app.use(express.json({ limit: "1mb" }));
 
   app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok" });

@@ -78,14 +78,23 @@ export function createHivesController({ hivesService, measuresService, inspectio
     async listMeasures(req, res) {
       res.json(await measuresService.list(req.user, req.params.id, req.validated));
     },
+    // async addMeasure(req, res) {
+    //   res.status(201).json(await measuresService.add(req.user, req.params.id, req.validated));
+    // },
     async addMeasure(req, res) {
-      res.status(201).json(await measuresService.add(req.user, req.params.id, req.validated));
+      const { measure, created } = await measuresService.add(req.user, req.params.id, req.validated);
+      res.status(created ? 201 : 200).json(measure);
     },
+
     async listInspections(req, res) {
       res.json({ items: await inspectionsService.list(req.user, req.params.id) });
     },
+    // async addInspection(req, res) {
+    //   res.status(201).json(await inspectionsService.add(req.user, req.params.id, req.validated));
+    // },
     async addInspection(req, res) {
-      res.status(201).json(await inspectionsService.add(req.user, req.params.id, req.validated));
+      const { inspection, created } = await inspectionsService.add(req.user, req.params.id, req.validated);
+      res.status(created ? 201 : 200).json(inspection);
     },
   };
 }

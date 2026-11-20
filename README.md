@@ -85,3 +85,9 @@ Rien : tous les points du livrable du jour 1 sont faits.
 Extrait du journal du serveur :
 
     [accès refusé] 403 GET /api/hives?site_id=CI-AGBO ip=::1 utilisateur=b6351399-…
+
+## Règle de conflit (TP 8)
+
+Règle retenue : **le serveur l'emporte**. Une modification envoyée avec une version périmée est refusée (`conflict`) et la réponse contient l'inspection telle qu'elle est sur le serveur (`current`).
+Aucune saisie n'est donc perdue sans le dire : l'apiculteur voit les deux versions et choisit lui-même ce qu'il garde, puis renvoie sa modification avec la version actuelle.
+« Le dernier qui écrit l'emporte » aurait été plus simple, mais la saisie écrasée disparaîtrait sans que personne le sache, ce qui est grave pour un suivi sanitaire des ruches.

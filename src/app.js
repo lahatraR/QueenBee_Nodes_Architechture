@@ -67,6 +67,9 @@ import { createAuthController } from "./controllers/auth.controller.js";
 import { createHivesController } from "./controllers/hives.controller.js";
 import { createAuthRouter } from "./routes/auth/auth.router.js";
 import { createHivesRouter } from "./routes/hives/hives.router.js";
+import { createInspectionsController } from "./controllers/inspections.controller.js";
+import { createInspectionsRouter } from "./routes/inspections/inspections.router.js";
+
 
 export function createApp({ hivesRepository, measuresRepository, inspectionsRepository, usersRepository }) {
   const authService = createAuthService({ usersRepository, auth: config.auth });
@@ -93,6 +96,11 @@ export function createApp({ hivesRepository, measuresRepository, inspectionsRepo
     controller: createHivesController({ hivesService, measuresService, inspectionsService }),
     requireAuth,
   }));
+  app.use("/api/inspections", createInspectionsRouter({
+    controller: createInspectionsController({ inspectionsService }),
+    requireAuth,
+  }));
+
 
   // À la fin, après toutes les routes, et dans cet ordre.
   app.use(notFoundHandler);

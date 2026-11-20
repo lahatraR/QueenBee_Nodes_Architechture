@@ -41,3 +41,26 @@ export const inspectionFields = {
 
 // Un Joi.object refuse tout champ non déclaré : impossible de glisser un author_id.
 export const inspectionSchema = Joi.object(inspectionFields);
+
+// tlds: { allow: false } : sinon les adresses en .test du jeu de données seraient refusées.
+const email = Joi.string().email({ tlds: { allow: false } }).max(254);
+
+export const loginSchema = Joi.object({
+  email: email.required(),
+  password: Joi.string().required(),
+});
+
+export const refreshSchema = Joi.object({
+  refresh_token: Joi.string().required(),
+});
+
+export const registerSchema = Joi.object({
+  email: email.required(),
+  password: Joi.string().min(12).max(72).required(), // bcrypt ignore tout au-delà de 72 octets
+  role: Joi.string().valid("apiculteur", "coordinateur", "gestionnaire", "admin").required(),
+  site_id: Joi.when("role", {
+    is: Joi.valid("apiculteur", "coordinateur"),
+    then: Joi.string().required(),
+    otherwise: Joi.forbidden(),
+  }),
+});

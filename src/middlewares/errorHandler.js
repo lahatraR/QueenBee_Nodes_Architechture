@@ -51,10 +51,23 @@ const ERREURS_PG_400 = ["23503", "23514", "22P02"];
 
 // Toutes les erreurs arrivent ici, dans cet ordre. Quatre paramètres obligatoires.
 export function errorHandler(err, req, res, next) {
+  // if (err instanceof AppError) {
+  //   return sendProblem(res, err.status, err.message);
+  // }
   // 1. Nos erreurs métier : elles portent leur code et leur message.
   if (err instanceof AppError) {
+    // Journal des requêtes interdites.
+    if (err.status === 401 || err.status === 403) {
+      console.warn(
+        `[accès refusé] ${err.status} ${req.method} ${req.originalUrl} ip=${req.ip} utilisateur=${req.user?.id ?? "-"}`
+      );
+    }
+    if (err.status === 401) {
+      res.set("WWW-Authenticate", 'Bearer realm="queenbee"'); // schéma attendu (RFC 6750)
+    }
     return sendProblem(res, err.status, err.message);
   }
+
 
   // 2. Erreurs de express.json()
   if (err.type === "entity.parse.failed") {

@@ -39,30 +39,53 @@
 
 // Le contrôleur lit req.validated (données vérifiées et converties par Joi),
 // jamais req.body ni req.query. Pas de try/catch : Express 5 transmet les erreurs.
+// export function createHivesController({ hivesService, measuresService, inspectionsService }) {
+//   return {
+//     async list(req, res) {
+//       res.status(200).json(await hivesService.list(req.validated));
+//     },
+
+//     async getById(req, res) {
+//       res.status(200).json(await hivesService.getById(req.params.id));
+//     },
+
+//     async listMeasures(req, res) {
+//       res.status(200).json(await measuresService.list(req.params.id, req.validated));
+//     },
+
+//     async addMeasure(req, res) {
+//       res.status(201).json(await measuresService.add(req.params.id, req.validated));
+//     },
+
+//     async listInspections(req, res) {
+//       res.status(200).json({ items: await inspectionsService.list(req.params.id) });
+//     },
+
+//     async addInspection(req, res) {
+//       res.status(201).json(await inspectionsService.add(req.params.id, req.validated));
+//     },
+//   };
+// }
+
 export function createHivesController({ hivesService, measuresService, inspectionsService }) {
   return {
     async list(req, res) {
-      res.status(200).json(await hivesService.list(req.validated));
+      res.json(await hivesService.list(req.user, req.validated));
     },
-
     async getById(req, res) {
-      res.status(200).json(await hivesService.getById(req.params.id));
+      res.json(await hivesService.getById(req.user, req.params.id));
     },
-
     async listMeasures(req, res) {
-      res.status(200).json(await measuresService.list(req.params.id, req.validated));
+      res.json(await measuresService.list(req.user, req.params.id, req.validated));
     },
-
     async addMeasure(req, res) {
-      res.status(201).json(await measuresService.add(req.params.id, req.validated));
+      res.status(201).json(await measuresService.add(req.user, req.params.id, req.validated));
     },
-
     async listInspections(req, res) {
-      res.status(200).json({ items: await inspectionsService.list(req.params.id) });
+      res.json({ items: await inspectionsService.list(req.user, req.params.id) });
     },
-
     async addInspection(req, res) {
-      res.status(201).json(await inspectionsService.add(req.params.id, req.validated));
+      res.status(201).json(await inspectionsService.add(req.user, req.params.id, req.validated));
     },
   };
 }

@@ -56,28 +56,50 @@
 //   };
 // }
 
+// import { ValidationError } from "../errors.js";
+
+// // La forme de la mesure (obligatoires, types, plages) est vérifiée par measureSchema.
+// // Le service garde les règles qui ont besoin de la ruche.
+// export function createMeasuresService({ hivesService, measuresRepository }) {
+//   return {
+//     async list(hiveId, { limit = 50, offset = 0 } = {}) {
+//       await hivesService.getById(hiveId); // 404 si la ruche n'existe pas
+//       const items = await measuresRepository.findByHive(hiveId, { limit, offset });
+//       return { items, limit, offset };
+//     },
+
+//     async add(hiveId, data) {
+//       const hive = await hivesService.getById(hiveId);
+
+//       if (data.hive_id !== undefined && data.hive_id !== hive.id) {
+//         throw new ValidationError(
+//           `Le hive_id du corps (${data.hive_id}) ne correspond pas à la ruche ${hive.id}.`
+//         );
+//       }
+
+//       // On garde le timestamp de la trame ; hive_id et site_id viennent de la ruche.
+//       return measuresRepository.add({ ...data, hive_id: hive.id, site_id: hive.site_id });
+//     },
+//   };
+// }
+
 import { ValidationError } from "../errors.js";
 
-// La forme de la mesure (obligatoires, types, plages) est vérifiée par measureSchema.
-// Le service garde les règles qui ont besoin de la ruche.
 export function createMeasuresService({ hivesService, measuresRepository }) {
   return {
-    async list(hiveId, { limit = 50, offset = 0 } = {}) {
-      await hivesService.getById(hiveId); // 404 si la ruche n'existe pas
+    async list(user, hiveId, { limit = 50, offset = 0 } = {}) {
+      await hivesService.getById(user, hiveId); // 404, puis 403
       const items = await measuresRepository.findByHive(hiveId, { limit, offset });
       return { items, limit, offset };
     },
 
-    async add(hiveId, data) {
-      const hive = await hivesService.getById(hiveId);
-
+    async add(user, hiveId, data) {
+      const hive = await hivesService.getById(user, hiveId);
       if (data.hive_id !== undefined && data.hive_id !== hive.id) {
         throw new ValidationError(
           `Le hive_id du corps (${data.hive_id}) ne correspond pas à la ruche ${hive.id}.`
         );
       }
-
-      // On garde le timestamp de la trame ; hive_id et site_id viennent de la ruche.
       return measuresRepository.add({ ...data, hive_id: hive.id, site_id: hive.site_id });
     },
   };

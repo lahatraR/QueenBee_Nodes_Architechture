@@ -2,11 +2,14 @@
 // Avec type "about:blank", title est l'intitulé du code : le même pour toutes les erreurs de ce code.
 const TITRES = {
   400: "Requête invalide",
+  401: "Authentification requise",
+  403: "Accès refusé",
   404: "Ressource introuvable",
   409: "Conflit",
   413: "Contenu trop volumineux",
   500: "Erreur interne",
 };
+
 
 
 export function sendProblem(res, status, detail) {

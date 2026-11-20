@@ -51,10 +51,11 @@ import { createMeasuresService } from "../src/services/measures.service.js";
 import { NotFoundError, ValidationError } from "../src/errors.js";
 
 const hive = { id: "SN-CASA-001", site_id: "SN-CASA", status: "active" };
+const admin = { id: "u-admin", role: "admin", site_id: null };
 
 // Un faux service des ruches : seule SN-CASA-001 existe.
 const fakeHivesService = {
-  async getById(id) {
+  async getById(user, id) {
     if (id !== hive.id) throw new NotFoundError(`Aucune ruche ne porte l'identifiant ${id}.`);
     return hive;
   },
@@ -81,7 +82,7 @@ test("enregistre une mesure valide, avec la ruche et le site du chemin", async (
   const measuresRepository = createFakeMeasuresRepository();
   const service = createMeasuresService({ hivesService: fakeHivesService, measuresRepository });
 
-  const measure = await service.add("SN-CASA-001", validMeasure);
+  const measure = await service.add(admin, "SN-CASA-001", validMeasure)
 
   assert.equal(measure.hive_id, "SN-CASA-001");
   assert.equal(measure.site_id, "SN-CASA");
@@ -93,7 +94,7 @@ test("refuse une trame qui désigne une autre ruche que le chemin", async () => 
   const service = createMeasuresService({ hivesService: fakeHivesService, measuresRepository });
 
   await assert.rejects(
-    service.add("SN-CASA-001", { ...validMeasure, hive_id: "SN-CASA-002" }),
+    service.add(admin, "SN-CASA-001", { ...validMeasure, hive_id: "SN-CASA-002" }),
     ValidationError,
   );
   assert.equal(measuresRepository.added.length, 0); // rien n'a été enregistré
@@ -103,6 +104,6 @@ test("refuse une mesure sur une ruche inconnue", async () => {
   const measuresRepository = createFakeMeasuresRepository();
   const service = createMeasuresService({ hivesService: fakeHivesService, measuresRepository });
 
-  await assert.rejects(service.add("XX-NOPE-999", validMeasure), NotFoundError);
+  await assert.rejects(service.add(admin, "XX-NOPE-999", validMeasure), NotFoundError);
   assert.equal(measuresRepository.added.length, 0);
 });

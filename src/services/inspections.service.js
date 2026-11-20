@@ -49,33 +49,65 @@
 //   };
 // }
 
+// import { ValidationError, ConflictError } from "../errors.js";
+
+// // La forme de l'inspection (UUID, date, état de colonie…) est vérifiée par inspectionSchema.
+// export function createInspectionsService({ hivesService, inspectionsRepository }) {
+//   return {
+//     async list(hiveId) {
+//       await hivesService.getById(hiveId);
+//       return inspectionsRepository.findByHive(hiveId);
+//     },
+
+//     async add(hiveId, data) {
+//       const hive = await hivesService.getById(hiveId);
+
+//       if (data.hive_id !== undefined && data.hive_id !== hive.id) {
+//         throw new ValidationError(
+//           `Le hive_id du corps (${data.hive_id}) ne correspond pas à la ruche ${hive.id}.`
+//         );
+//       }
+//       // L'UUID est choisi par l'application mobile : deux envois du même id sont un conflit
+//       // (le TP 8 rendra ce rejeu idempotent).
+//       if (await inspectionsRepository.findById(data.id)) {
+//         throw new ConflictError(`Une inspection porte déjà l'identifiant ${data.id}.`);
+//       }
+
+//       return inspectionsRepository.add({
+//         id: data.id,
+//         hive_id: hive.id,
+//         inspected_at: data.inspected_at,
+//         colony_status: data.colony_status,
+//         queen_present: data.queen_present ?? null,
+//         observations: data.observations ?? null,
+//       });
+//     },
+//   };
+// }
+
 import { ValidationError, ConflictError } from "../errors.js";
 
-// La forme de l'inspection (UUID, date, état de colonie…) est vérifiée par inspectionSchema.
 export function createInspectionsService({ hivesService, inspectionsRepository }) {
   return {
-    async list(hiveId) {
-      await hivesService.getById(hiveId);
+    async list(user, hiveId) {
+      await hivesService.getById(user, hiveId);
       return inspectionsRepository.findByHive(hiveId);
     },
 
-    async add(hiveId, data) {
-      const hive = await hivesService.getById(hiveId);
-
+    async add(user, hiveId, data) {
+      const hive = await hivesService.getById(user, hiveId);
       if (data.hive_id !== undefined && data.hive_id !== hive.id) {
         throw new ValidationError(
           `Le hive_id du corps (${data.hive_id}) ne correspond pas à la ruche ${hive.id}.`
         );
       }
-      // L'UUID est choisi par l'application mobile : deux envois du même id sont un conflit
-      // (le TP 8 rendra ce rejeu idempotent).
       if (await inspectionsRepository.findById(data.id)) {
         throw new ConflictError(`Une inspection porte déjà l'identifiant ${data.id}.`);
       }
-
       return inspectionsRepository.add({
         id: data.id,
         hive_id: hive.id,
+        author_id: user.id, // l'auteur vient du jeton, jamais du corps
         inspected_at: data.inspected_at,
         colony_status: data.colony_status,
         queen_present: data.queen_present ?? null,

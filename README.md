@@ -72,3 +72,16 @@ Rien : tous les points du livrable du jour 1 sont faits.
 
 4. **Que se passerait-il si `client.release()` n'était pas dans le `finally`, et qu'une erreur survenait dix fois de suite ?**
    Chaque erreur laisserait une connexion empruntée et jamais rendue. Après dix erreurs, les 10 connexions du pool seraient toutes perdues : les requêtes suivantes attendraient 5 s puis échoueraient avec « timeout exceeded when trying to connect », et l'API ne répondrait plus.
+
+## Journal des requêtes interdites (TP 7)
+
+| Requête interdite | Connecté en | Requête | Code attendu | Code obtenu |
+|---|---|---|---|---|
+| Ressource d'un autre site | coord.sn-casa | GET /api/hives?site_id=CI-AGBO | 403 | … |
+| Rôle insuffisant | api1.sn-casa | POST /api/hives/SN-CASA-001/measures | 403 | … |
+| Jeton expiré (JWT_ACCESS_TTL=10s) | admin | GET /api/hives après 10 s | 401 | … |
+| Jeton falsifié (un caractère changé) | admin | GET /api/hives | 401 | … |
+
+Extrait du journal du serveur :
+
+    [accès refusé] 403 GET /api/hives?site_id=CI-AGBO ip=::1 utilisateur=b6351399-…

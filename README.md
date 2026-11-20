@@ -54,3 +54,21 @@ API v0, tag `jour1-fin`.
 Rien : tous les points du livrable du jour 1 sont faits.
 
 
+## Résultats du TP 5 — Import de 4 800 mesures
+
+| Mode          | Durée (ms) |
+|---------------|------------|
+| ligne à ligne | 4 623      |
+| par lot       | 308        |
+
+1. **Quel temps obtenez-vous dans chaque mode ? D'où vient l'écart ?**
+   Ligne à ligne : 4 623 ms ; par lot : 308 ms, soit environ 15 fois plus rapide. Ligne à ligne paie 4 800 allers-retours avec la base et 4 800 validations, chacune écrite sur disque (autocommit) ; par lot, il n'y a que 5 requêtes de 1 000 lignes et une seule validation à la fin.
+
+2. **Si la 2 001e mesure provoquait une erreur, que resterait-il en base dans chaque mode ?**
+   Ligne à ligne : les 2 000 premières mesures, déjà validées une par une, restent en base. Par lot : rien, car l'erreur déclenche un ROLLBACK qui annule toute la transaction.
+
+3. **Pourquoi la transaction emprunte-t-elle une connexion avec `pool.connect()` au lieu d'appeler `pool.query()` ?**
+   BEGIN, les INSERT et COMMIT doivent passer par la même connexion : une transaction appartient à une connexion. `pool.query()` peut prendre une connexion différente à chaque appel, et les INSERT ne feraient alors pas partie de la transaction.
+
+4. **Que se passerait-il si `client.release()` n'était pas dans le `finally`, et qu'une erreur survenait dix fois de suite ?**
+   Chaque erreur laisserait une connexion empruntée et jamais rendue. Après dix erreurs, les 10 connexions du pool seraient toutes perdues : les requêtes suivantes attendraient 5 s puis échoueraient avec « timeout exceeded when trying to connect », et l'API ne répondrait plus.

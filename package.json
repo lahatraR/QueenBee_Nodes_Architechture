@@ -21,6 +21,7 @@
   "homepage": "https://github.com/lahatraR/QueenBee_Nodes_Architechture#readme",
   "dependencies": {
     "express": "^5.3.0",
-    "morgan": "^1.12.1"
+    "morgan": "^1.12.1",
+    "pg": "^8.23.1"
   }
 }
